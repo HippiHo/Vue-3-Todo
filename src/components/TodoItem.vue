@@ -1,24 +1,58 @@
 <script setup lang="ts">
 // https://icon-sets.iconify.design/ph/check-circle/
-import { Icon } from '@iconify/vue';
-import type TodoItemType from '../types/todo.types'
+import { Icon } from "@iconify/vue";
+import type TodoItemType from "../types/todo.types";
 
 defineProps<{
-  todo: TodoItemType
-}>()
+  todo: TodoItemType;
+  index: number;
+}>();
+
+const emit = defineEmits<{
+  (e: "toggle-complete", index: number): void;
+  (e: "edit-todo", index: number): void;
+  (e: "update-todo", value: string, index: number): void;
+  (e: "delete-todo", id: string): void;
+}>();
 </script>
 
 <template>
   <li key="todo.id">
-    <input type="checkbox" :checked="todo.isCompleted" />
+    <input
+      type="checkbox"
+      :checked="todo.isCompleted"
+      @input="$emit('toggle-complete', index)"
+    />
     <div class="todo">
-      <input v-if="todo.isEditing" type="text" :value="todo.todo" />
-      <span v-else>{{ todo.todo }}</span>
+      <input v-if="todo.isEditing" type="text" :value="todo.todo" @input="$emit('update-todo', ($event.target as HTMLInputElement).value, index)" />
+      <span v-else :class="{ 'completed-todo': todo.isCompleted }">{{
+        todo.todo
+      }}</span>
     </div>
     <div class="todo-actions">
-      <Icon v-if="todo.isEditing" class="icon" icon="ph:check-circle" color="#41b080" width="22" />
-      <Icon v-else class="icon" icon="ph:pencil-fill" color="#41b080" width="22" />
-      <Icon class="icon" icon="ph:trash" color="#f95e5e" width="22" />
+      <Icon
+        v-if="todo.isEditing"
+        @click="$emit('edit-todo', index)"
+        class="icon"
+        icon="ph:check-circle"
+        color="#41b080"
+        width="22"
+      />
+      <Icon
+        v-else
+        @click="$emit('edit-todo', index)"
+        class="icon"
+        icon="ph:pencil-fill"
+        color="#41b080"
+        width="22"
+      />
+      <Icon
+        @click="$emit('delete-todo', todo.id)"
+        class="icon"
+        icon="ph:trash"
+        color="#f95e5e"
+        width="22"
+      />
     </div>
   </li>
 </template>
@@ -54,6 +88,10 @@ li {
 
   .todo {
     flex: 1;
+
+    .completed-todo {
+      text-decoration: line-through;
+    }
 
     input[type="text"] {
       width: 100%;
