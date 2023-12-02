@@ -2,11 +2,32 @@
 import { Icon } from "@iconify/vue";
 import TodoCreator from "../components/TodoCreator.vue";
 import { uid } from "uid";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import type TodoItemType from "../types/todo.types";
 import TodoItem from "../components/TodoItem.vue";
 
 const todoList = ref<TodoItemType[]>([]);
+
+const fetchTodoList = () => {
+  const localList = localStorage.getItem("todoList");
+  if (localList) {
+    todoList.value = JSON.parse(localList);
+  }
+};
+
+fetchTodoList();
+
+const setTodoListLocalStorage = () => {
+  localStorage.setItem("todoList", JSON.stringify(todoList.value));
+};
+
+watch(
+  todoList,
+  () => {
+    setTodoListLocalStorage();
+  },
+  { deep: true }
+);
 
 const createTodo = (todo: string) => {
   todoList.value.push({
@@ -25,16 +46,15 @@ const toggleTodoComplete = (todoPosition: number) => {
 const toggleEditTodo = (todoPosition: number) => {
   todoList.value[todoPosition].isEditing =
     !todoList.value[todoPosition].isEditing;
-}
+};
 
 const updateTodo = (todoValue: string, todoPosition: number) => {
-  todoList.value[todoPosition].todo = todoValue
-}
+  todoList.value[todoPosition].todo = todoValue;
+};
 
 const deleteTodo = (todoId: string) => {
-  todoList.value =   todoList.value.filter((todo) => todo.id !== todoId)
-}
-
+  todoList.value = todoList.value.filter((todo) => todo.id !== todoId);
+};
 </script>
 
 <template>
