@@ -96,11 +96,6 @@ main {
   margin: 0 auto;
   padding: 40px 16px;
 
-  h1 {
-    margin-bottom: 16px;
-    text-align: center;
-  }
-
   .todo-list {
     display: flex;
     flex-direction: column;
