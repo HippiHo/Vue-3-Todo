@@ -2,7 +2,7 @@
 import { Icon } from "@iconify/vue";
 import TodoCreator from "../components/TodoCreator.vue";
 import { uid } from "uid";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import type TodoItemType from "../types/todo.types";
 import TodoItem from "../components/TodoItem.vue";
 
@@ -28,6 +28,10 @@ watch(
   },
   { deep: true }
 );
+
+const todoCompleted = computed(() => {
+  return todoList.value.every((todo) => todo.isCompleted)
+})
 
 const createTodo = (todo: string) => {
   todoList.value.push({
@@ -75,6 +79,10 @@ const deleteTodo = (todoId: string) => {
     <p v-else class="todos-msg">
       <Icon icon="noto-v1:sad-but-relieved-face" />
       <span>You have no todo's to complete! Add one!</span>
+    </p>
+    <p v-if="todoCompleted && todoList.length > 0" class="todos-msg">
+      <Icon icon="noto-v1:party-popper" />
+      <span>You have completed all your todos!</span>
     </p>
   </main>
 </template>
